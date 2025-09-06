@@ -1,29 +1,44 @@
 using System;
+using Application.Meetings.Commands;
+using Application.Meetings.Queries;
 using Domain;
-using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class MeetingsController(AppDbContext context) : BaseApiController
+public class MeetingsController() : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<List<Meeting>>> GetMeetings()
+    public async Task<ActionResult<List<Meeting>>> GetMeetings(CancellationToken cancellationToken)
     {
-        return await context.Meetings.ToListAsync();
+        return await Mediator.Send(new GetMeetingList.Query(), cancellationToken);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Meeting>> GetMeetingDetails(string id)
     {
-        var meeting = await context.Meetings.FindAsync(id);
+        return await Mediator.Send(new GetMeetingDetails.Query { Id = id });
+    }
 
-        if (meeting == null)
-        {
-            return NotFound();
-        }
+    [HttpPost]
+    public async Task<ActionResult<string>> CreateMeeting(Meeting meeting)
+    {
+        return await Mediator.Send(new CreateMeeting.Command { Meeting = meeting });
+    }
 
-        return meeting;
+    [HttpPut]
+    public async Task<ActionResult> EditMeeting(Meeting meeting)
+    {
+        await Mediator.Send(new EditMeeting.Command { Meeting = meeting });
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteMeeting(string id)
+    {
+        await Mediator.Send(new DeleteMeeting.Command { Id = id });
+
+        return Ok();
     }
 }
