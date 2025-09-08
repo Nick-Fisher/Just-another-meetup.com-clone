@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import httpClient from '../api/httpClient';
+import agent from '../api/agent';
 
 export const useActivities = (id?: string) => {
   const queryClient = useQueryClient();
@@ -7,8 +7,7 @@ export const useActivities = (id?: string) => {
   const { data: activities, isPending } = useQuery({
     queryKey: ['activities'],
     queryFn: async () => {
-      const response = await httpClient.get<Activity[]>('/meetings');
-
+      const response = await agent.get<Activity[]>('/meetings');
       return response.data;
     },
   });
@@ -16,27 +15,26 @@ export const useActivities = (id?: string) => {
   const { data: activity, isLoading: isLoadingActivity } = useQuery({
     queryKey: ['activities', id],
     queryFn: async () => {
-      const response = await httpClient.get<Activity>(`/meetings/${id}`);
-
+      const response = await agent.get<Activity>(`/meetings/${id}`);
       return response.data;
     },
     enabled: !!id,
   });
 
-  const updateActivitiy = useMutation({
+  const updateActivity = useMutation({
     mutationFn: async (activity: Activity) => {
-      await httpClient.put('/meetings', activity);
+      await agent.put('/meetings', activity);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['activities'],
+        queryKey: ['meetings'],
       });
     },
   });
 
   const createActivity = useMutation({
     mutationFn: async (activity: Activity) => {
-      const response = await httpClient.post('/meetings', activity);
+      const response = await agent.post('/meetings', activity);
       return response.data;
     },
     onSuccess: async () => {
@@ -48,7 +46,7 @@ export const useActivities = (id?: string) => {
 
   const deleteActivity = useMutation({
     mutationFn: async (id: string) => {
-      await httpClient.delete(`/meetings/${id}`);
+      await agent.delete(`/meetings/${id}`);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -59,11 +57,11 @@ export const useActivities = (id?: string) => {
 
   return {
     activities,
-    activity,
-    isLoadingActivity,
     isPending,
-    updateActivitiy,
+    updateActivity,
     createActivity,
     deleteActivity,
+    activity,
+    isLoadingActivity,
   };
 };
