@@ -1,6 +1,7 @@
 using System;
+using Application.Core;
+using Application.Meetings.DTOs;
 using AutoMapper;
-using Domain;
 using Infrastructure;
 using MediatR;
 
@@ -8,22 +9,26 @@ namespace Application.Meetings.Commands;
 
 public class EditMeeting
 {
-    public class Command : IRequest
+    public class Command : IRequest<Result<Unit>>
     {
-        public required Meeting Meeting { get; set; }
+        public required EditMeetingDto MeetingDto { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command>
+    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Result<Unit>>
     {
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var meeting = await context.Meetings.FindAsync([request.Meeting.Id], cancellationToken);
+            var meeting = await context.Meetings.FindAsync([request.MeetingDto.Id], cancellationToken);
 
-            if (meeting == null) throw new Exception("Meeting not found");
+            if (meeting == null) return Result<Unit>.Failure("Meeting not found", 404);
 
-            mapper.Map(request.Meeting, meeting);
+            mapper.Map(request.MeetingDto, meeting);
 
-            await context.SaveChangesAsync(cancellationToken);
+            var result = await context.SaveChangesAsync(cancellationToken) > 0;
+
+            if (!result) return Result<Unit>.Failure("Failed to update meeting", 400);
+
+            return Result<Unit>.Success(Unit.Value);
         }
     }
 }
