@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import agent from '../api/agent';
 import { useLocation } from 'react-router';
+import type { Activity } from '../types';
 
 export const useActivities = (id?: string) => {
   const queryClient = useQueryClient();
@@ -12,7 +13,6 @@ export const useActivities = (id?: string) => {
       const response = await agent.get<Activity[]>('/meetings');
       return response.data;
     },
-    staleTime: 1000 * 60 * 1, // 1 minute
     enabled: !id && location.pathname === '/activities',
   });
 
@@ -31,7 +31,7 @@ export const useActivities = (id?: string) => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['meetings'],
+        queryKey: ['activities'],
       });
     },
   });

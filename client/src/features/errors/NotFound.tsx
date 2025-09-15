@@ -9,21 +9,16 @@ export default function NotFound() {
         height: 400,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         p: 6,
       }}
     >
-      <SearchOff color='primary' sx={{ fontSize: 100 }} />
-      <Typography variant='h3' color='primary' gutterBottom>
-        Oops - we've looked everywhere but we couldn't find what you were
-        looking for.
+      <SearchOff sx={{ fontSize: 100 }} color='primary' />
+      <Typography gutterBottom variant='h3'>
+        Oops - we could not find what you are looking for
       </Typography>
-      <Typography variant='h5' color='secondary'>
-        (404) Not Found
-      </Typography>
-
-      <Button to={'/activities'} fullWidth component={Link}>
+      <Button fullWidth component={Link} to='/activities'>
         Return to the activities page
       </Button>
     </Paper>

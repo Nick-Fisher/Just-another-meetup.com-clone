@@ -4,7 +4,7 @@ import HomePage from '../../features/home/HomePage';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import ActivityForm from '../../features/activities/form/ActivityForm';
 import ActivityDetailPage from '../../features/activities/details/ActivityDetailPage';
-import TestErrors from '../../features/errors/TestError';
+import TestErrors from '../../features/errors/TestErrors';
 import NotFound from '../../features/errors/NotFound';
 import ServerError from '../../features/errors/ServerError';
 
@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
       { path: 'errors', element: <TestErrors /> },
       { path: 'not-found', element: <NotFound /> },
       { path: 'server-error', element: <ServerError /> },
-      { path: '*', element: <Navigate to='/not-found' replace /> },
+      { path: '*', element: <Navigate replace to='/not-found' /> },
     ],
   },
 ]);

@@ -7,11 +7,11 @@ export class UiStore {
     makeAutoObservable(this);
   }
 
-  isBusy = () => {
+  isBusy() {
     this.isLoading = true;
-  };
+  }
 
-  isIdle = () => {
+  isIdle() {
     this.isLoading = false;
-  };
+  }
 }

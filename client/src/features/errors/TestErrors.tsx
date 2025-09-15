@@ -41,7 +41,7 @@ export default function TestErrors() {
         <Button onClick={() => handleError('buggy/bad-request')}>
           Bad request
         </Button>
-        <Button onClick={() => handleError('meetings', 'post')}>
+        <Button onClick={() => handleError('activities', 'post')}>
           Validation error
         </Button>
         <Button onClick={() => handleError('buggy/server-error')}>

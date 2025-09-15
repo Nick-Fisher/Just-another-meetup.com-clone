@@ -6,15 +6,15 @@ export default function ServerError() {
 
   return (
     <Paper>
-      {state?.error ? (
+      {state.error ? (
         <>
           <Typography
-            variant='h3'
             gutterBottom
+            variant='h3'
             sx={{ px: 4, pt: 2 }}
             color='secondary'
           >
-            {state.error?.message || 'Server Error'}
+            {state.error?.message || 'There has been an error'}
           </Typography>
           <Divider />
           <Typography variant='body1' sx={{ p: 4 }}>
@@ -22,7 +22,7 @@ export default function ServerError() {
           </Typography>
         </>
       ) : (
-        <Typography variant='h5'>Server Error</Typography>
+        <Typography variant='h5'>Server error</Typography>
       )}
     </Paper>
   );
