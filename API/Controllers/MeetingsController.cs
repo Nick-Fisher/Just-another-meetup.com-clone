@@ -3,12 +3,14 @@ using Application.Meetings.Commands;
 using Application.Meetings.DTOs;
 using Application.Meetings.Queries;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 public class MeetingsController() : BaseApiController
 {
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<Meeting>>> GetMeetings(CancellationToken cancellationToken)
     {

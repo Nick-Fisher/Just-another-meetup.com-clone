@@ -73,29 +73,18 @@ export default function ActivityForm() {
         flexDirection='column'
         gap={3}
       >
-        <TextInput label='Title' control={control} name='title' />
-        <TextInput
-          label='Description'
-          control={control}
-          name='description'
-          multiline
-          rows={3}
-        />
+        <TextInput label='Title' name='title' />
+        <TextInput label='Description' name='description' multiline rows={3} />
         <Box display='flex' gap={3}>
           <SelectInput
             items={categoryOptions}
             label='Category'
-            control={control}
             name='category'
           />
-          <DateTimeInput label='Date' control={control} name='date' />
+          <DateTimeInput label='Date' name='date' />
         </Box>
 
-        <LocationInput
-          control={control}
-          label='Enter the location'
-          name='location'
-        />
+        <LocationInput label='Enter the location' name='location' />
 
         <Box display='flex' justifyContent='end' gap={3}>
           <Button color='inherit'>Cancel</Button>

@@ -58,3 +58,5 @@ API/appsettings.json
 API/meetups.db
 API/meetups.db-shm
 API/meetups.db-wal
+
+.env.development

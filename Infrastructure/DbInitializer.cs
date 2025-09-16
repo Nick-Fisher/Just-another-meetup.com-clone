@@ -1,12 +1,43 @@
 using System;
 using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure;
 
 public class DbInitializer
 {
-    public static async Task SeedData(AppDbContext context)
+    public static async Task SeedData(AppDbContext context, UserManager<User> userManager)
     {
+        if (!userManager.Users.Any())
+        {
+            var users = new List<User>
+            {
+                new User
+                {
+                    DisplayName = "Bob",
+                    UserName = "bob@example.com",
+                    Email = "bob@example.com"
+                },
+                new User
+                {
+                    DisplayName = "Tom",
+                    UserName = "tom@example.com",
+                    Email = "tom@example.com"
+                },
+                new User
+                {
+                    DisplayName = "Jane",
+                    UserName = "jane@example.com",
+                    Email = "jane@example.com"
+                },
+            };
+
+            foreach (var user in users)
+            {
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+            }
+        }
+
         if (context.Meetings.Any()) return;
 
         var meetings = new List<Meeting>
