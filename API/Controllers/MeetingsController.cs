@@ -10,7 +10,6 @@ namespace API.Controllers;
 
 public class MeetingsController() : BaseApiController
 {
-    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<Meeting>>> GetMeetings(CancellationToken cancellationToken)
     {

@@ -25,6 +25,14 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
+});
 
 builder.Services.AddCors();
 builder.Services.AddMediatR(x =>
@@ -45,11 +53,10 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(options => options
+app.UseCors(options => options.WithOrigins("http://localhost:3000", "https://localhost:3000")
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials()
-        .WithOrigins("http://localhost:3000", "http://localhost:3000"));
+        .AllowCredentials());
 
 app.UseAuthentication();
 app.UseAuthorization();

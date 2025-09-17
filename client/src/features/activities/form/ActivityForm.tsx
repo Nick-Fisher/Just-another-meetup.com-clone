@@ -13,10 +13,9 @@ import SelectInput from '../../../app/shared/components/SelectInput';
 import { categoryOptions } from './categoryOptions';
 import DateTimeInput from '../../../app/shared/components/DateTimeInput';
 import LocationInput from '../../../app/shared/components/LocationInput';
-import type { Activity } from '../../../lib/types';
 
 export default function ActivityForm() {
-  const { control, reset, handleSubmit } = useForm<ActivitySchema>({
+  const { reset, handleSubmit, control } = useForm({
     mode: 'onTouched',
     resolver: zodResolver(activitySchema),
   });
@@ -73,18 +72,29 @@ export default function ActivityForm() {
         flexDirection='column'
         gap={3}
       >
-        <TextInput label='Title' name='title' />
-        <TextInput label='Description' name='description' multiline rows={3} />
+        <TextInput label='Title' name='title' control={control} />
+        <TextInput
+          label='Description'
+          name='description'
+          multiline
+          rows={3}
+          control={control}
+        />
         <Box display='flex' gap={3}>
           <SelectInput
             items={categoryOptions}
             label='Category'
             name='category'
+            control={control}
           />
-          <DateTimeInput label='Date' name='date' />
+          <DateTimeInput label='Date' name='date' control={control} />
         </Box>
 
-        <LocationInput label='Enter the location' name='location' />
+        <LocationInput
+          label='Enter the location'
+          name='location'
+          control={control}
+        />
 
         <Box display='flex' justifyContent='end' gap={3}>
           <Button color='inherit'>Cancel</Button>
