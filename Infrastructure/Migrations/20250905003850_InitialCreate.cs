@@ -20,7 +20,7 @@ namespace Infrastructure.Migrations
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     Category = table.Column<string>(type: "TEXT", nullable: false),
-                    IsCanceled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsCancelled = table.Column<bool>(type: "INTEGER", nullable: false),
                     City = table.Column<string>(type: "TEXT", nullable: false),
                     Venue = table.Column<string>(type: "TEXT", nullable: false),
                     Latitude = table.Column<double>(type: "REAL", nullable: false),

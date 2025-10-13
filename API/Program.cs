@@ -1,12 +1,16 @@
 using API.Middleware;
 using Application.Core;
+using Application.Interfaces;
 using Application.Meetings.Queries;
 using Application.Meetings.Validators;
+using Common.Security;
 using Domain;
 using FluentValidation;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static Common.Security.IsHostRequirement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +44,8 @@ builder.Services.AddMediatR(x =>
     x.RegisterServicesFromAssemblyContaining<GetMeetingList.Handler>();
     x.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
+
+builder.Services.AddScoped<IUserAccessor, UserAccessor>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateMeetingValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
@@ -49,6 +55,16 @@ builder.Services.AddIdentityApiEndpoints<User>(opt =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("IsMeetingHost", policy =>
+    {
+        policy.Requirements.Add(new IsHostRequirement());
+    });
+});
+
+builder.Services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
 
 var app = builder.Build();
 

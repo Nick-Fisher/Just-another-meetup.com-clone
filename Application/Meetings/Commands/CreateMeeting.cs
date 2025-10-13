@@ -1,5 +1,6 @@
 using System;
 using Application.Core;
+using Application.Interfaces;
 using Application.Meetings.DTOs;
 using AutoMapper;
 using Domain;
@@ -16,14 +17,25 @@ public class CreateMeeting
         public required CreateMeetingDto MeetingDto { get; set; }
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, Result<string>>
+    public class Handler(AppDbContext context, IMapper mapper, IUserAccessor userAccessor)
+     : IRequestHandler<Command, Result<string>>
     {
         public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
         {
+            var user = await userAccessor.GetUserAsync();
 
             var meeting = mapper.Map<Meeting>(request.MeetingDto);
 
             context.Meetings.Add(meeting);
+
+            var attendee = new MeetingAttendee
+            {
+                MeetingId = meeting.Id,
+                UserId = user.Id,
+                IsHost = true
+            };
+
+            meeting.Attendees.Add(attendee);
 
             var result = await context.SaveChangesAsync(cancellationToken) > 0;
 
