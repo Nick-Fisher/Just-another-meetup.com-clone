@@ -15,6 +15,13 @@ export const useActivities = (id?: string) => {
       return response.data;
     },
     enabled: !id && location.pathname === '/activities' && !!currentUser,
+    select: (data) => {
+      return data.map((activity) => ({
+        ...activity,
+        isHost: activity.hostId === currentUser?.id,
+        isGoing: activity.attendees.some((a) => a.id === currentUser?.id),
+      }));
+    },
   });
 
   const { data: activity, isLoading: isLoadingActivity } = useQuery({
@@ -24,6 +31,11 @@ export const useActivities = (id?: string) => {
       return response.data;
     },
     enabled: !!id && !!currentUser,
+    select: (activity) => ({
+      ...activity,
+      isHost: activity.hostId === currentUser?.id,
+      isGoing: activity.attendees.some((a) => a.id === currentUser?.id),
+    }),
   });
 
   const updateActivity = useMutation({
@@ -60,6 +72,63 @@ export const useActivities = (id?: string) => {
     },
   });
 
+  const updateAttendance = useMutation({
+    mutationFn: async (id: string) => {
+      await agent.post(`/meetings/${id}/attend`);
+    },
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['activities', id] });
+
+      const oldActivity = queryClient.getQueryData<Activity>([
+        'activities',
+        id,
+      ]);
+
+      queryClient.setQueryData<Activity>(
+        ['activities', id],
+        (previousActivity) => {
+          if (!previousActivity || !currentUser) return previousActivity;
+
+          const isHost = previousActivity.hostId === currentUser.id;
+          const isAttending = previousActivity.attendees.some(
+            (a) => a.id === currentUser.id
+          );
+
+          return {
+            ...previousActivity,
+            isCancelled: isHost
+              ? !previousActivity.isCancelled
+              : previousActivity.isCancelled,
+            attendees: isAttending
+              ? isHost
+                ? previousActivity.attendees
+                : previousActivity.attendees.filter(
+                    (x) => x.id !== currentUser.id
+                  )
+              : [
+                  ...previousActivity.attendees,
+                  {
+                    id: currentUser.id,
+                    displayName: currentUser.displayName,
+                    imageUrl: currentUser.imageUrl,
+                  },
+                ],
+          };
+        }
+      );
+
+      return { oldActivity };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.oldActivity) {
+        queryClient.setQueryData<Activity>(
+          ['activities', _id],
+          context.oldActivity
+        );
+      }
+    },
+  });
+
   return {
     activities,
     isLoading,
@@ -68,5 +137,6 @@ export const useActivities = (id?: string) => {
     deleteActivity,
     activity,
     isLoadingActivity,
+    updateAttendance,
   };
 };
